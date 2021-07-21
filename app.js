@@ -1,17 +1,35 @@
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext("2d");
-const colors = canvas.getElementsByClassName("jsColor");
+const colors = document.getElementsByClassName("jsColor");
+const range = document.getElementById("jsRange");
+const mode  = document.getElementById("jsMode");
+const save = document.getElementById("jsSave");
+
 
 /* 그림을 그리기 위해선 캔버스의 픽셀 사이즈를 정해줘야함 */
 canvas.width=700;
 canvas.height= 700;
+// 캔버스가 처음 만들어졌을 때 배경색을 하얀색으로 함 
+ctx.fillStyle= "white";
+ctx.fillRect(0,0,canvas.width , canvas.height);
+// lineCap :  라인 끝 모양을 설정해줌 
+ctx.lineCap = "round";
+ctx.lineJoin = "round";
+
+
 /*  처음 브러쉬의 색상  */
-ctx.strokeStlye ="#2c2c2c";
+ctx.strokeStyle ="#2c2c2c";
 /* 그려질 때 나오는 선의 굵기 */
-ctx.lineWidth = 2.5;
+ctx.lineWidth = 5.0;
+ctx.arc(100, 35, 25, 0, 2 * Math.PI);
+// 처음 채울때 사용할 색상을 저장  
+ctx.fillStyle = "#2c2c2c";
+
+
 
 /* 처음 페이지 들어 왔을 때는 painting = false */
 let painting = false;
+let filling = false;
 
 function stopPainting() {
     painting= false;
@@ -40,10 +58,48 @@ function onMouseDown(event) {
     painting = true;
 
 }
-function changeColor(event) {
+
+function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
-    ctx.strokeStlye = color;
-    
+    ctx.strokeStyle = color;  
+    ctx.fillStyle = color;
+}
+
+function handleRange(event) {
+   const size= event.target.value;
+   ctx.lineWidth = size;
+}
+
+function fillMode(event) {
+    if(filling == true) {
+        filling = false;
+        mode.innerText = "Fill"
+    }else {
+        filling = true;
+        mode.innerText = "Paint"
+        
+    }
+
+}
+function handleCanvasClick(event) {
+    if(filling) {
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+}
+//마우스 우 클릭으로 제어할 수 없도록 해주는 함수 
+function handleCM(event) {
+    event.preventDefault();
+}
+
+function saveImage(event) {
+    //이미지를 저장할 때 png 형태로 저장 
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    //a 태그의 download 를 만들어서 다운로드 해주고 이름을 paintjs로 저장  
+    link.download = "paintjs"
+    link.click();
+
 }
 
 if(canvas) {
@@ -51,6 +107,19 @@ if(canvas) {
     canvas.addEventListener("mousedown" ,startingPainting);
     canvas.addEventListener("mouseup" , stopPainting);
     canvas.addEventListener("mouseleave" , stopPainting);
+    canvas.addEventListener("click" , handleCanvasClick);
+    canvas.addEventListener("contextmenu" , handleCM);
 }
 
-Array.from(colors).forEach(color => color.addEventListener("click" , changeColor))
+Array.from(colors).forEach(color => color.addEventListener("click" , handleColorClick));
+
+if(range) {
+    range.addEventListener("input" , handleRange);
+}
+
+if(mode) {
+    mode.addEventListener("click" , fillMode);
+}
+if(save) {
+    save.addEventListener("click" , saveImage);
+}
