@@ -1,11 +1,12 @@
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext("2d");
+const colors = canvas.getElementsByClassName("jsColor");
 
 /* 그림을 그리기 위해선 캔버스의 픽셀 사이즈를 정해줘야함 */
 canvas.width=700;
 canvas.height= 700;
-/* 브러쉬의 색상  */
-ctx.fillStyle ="#2c2c2c";
+/*  처음 브러쉬의 색상  */
+ctx.strokeStlye ="#2c2c2c";
 /* 그려질 때 나오는 선의 굵기 */
 ctx.lineWidth = 2.5;
 
@@ -39,7 +40,11 @@ function onMouseDown(event) {
     painting = true;
 
 }
-
+function changeColor(event) {
+    const color = event.target.style.backgroundColor;
+    ctx.strokeStlye = color;
+    
+}
 
 if(canvas) {
     canvas.addEventListener("mousemove" , onMouseMove);
@@ -47,3 +52,5 @@ if(canvas) {
     canvas.addEventListener("mouseup" , stopPainting);
     canvas.addEventListener("mouseleave" , stopPainting);
 }
+
+Array.from(colors).forEach(color => color.addEventListener("click" , changeColor))
