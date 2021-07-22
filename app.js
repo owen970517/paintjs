@@ -4,6 +4,12 @@ const colors = document.getElementsByClassName("jsColor");
 const range = document.getElementById("jsRange");
 const mode  = document.getElementById("jsMode");
 const save = document.getElementById("jsSave");
+const eraser = document.getElementById("jsErase");
+const check = document.getElementById("jsCurColor");
+const circles =  document.getElementById("jsCircle");
+
+//const mouseCursor = document.querySelector(".cursor");
+//mouseCursor.classList.remove("cursor");
 
 
 /* 그림을 그리기 위해선 캔버스의 픽셀 사이즈를 정해줘야함 */
@@ -13,15 +19,16 @@ canvas.height= 700;
 ctx.fillStyle= "white";
 ctx.fillRect(0,0,canvas.width , canvas.height);
 // lineCap :  라인 끝 모양을 설정해줌 
-ctx.lineCap = "round";
-ctx.lineJoin = "round";
+//ctx.lineCap = "round";
+//ctx.lineJoin = "round";
 
-
+//브러쉬 색상을 처음 시작했을 땐 기본 값으로 설정 
+check.style.backgroundColor ="#2c2c2c";
 /*  처음 브러쉬의 색상  */
 ctx.strokeStyle ="#2c2c2c";
 /* 그려질 때 나오는 선의 굵기 */
 ctx.lineWidth = 5.0;
-ctx.arc(100, 35, 25, 0, 2 * Math.PI);
+
 // 처음 채울때 사용할 색상을 저장  
 ctx.fillStyle = "#2c2c2c";
 
@@ -30,6 +37,8 @@ ctx.fillStyle = "#2c2c2c";
 /* 처음 페이지 들어 왔을 때는 painting = false */
 let painting = false;
 let filling = false;
+let circled = false;
+
 
 function stopPainting() {
     painting= false;
@@ -61,8 +70,10 @@ function onMouseDown(event) {
 
 function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
+    check.style.backgroundColor = color;
     ctx.strokeStyle = color;  
     ctx.fillStyle = color;
+   
 }
 
 function handleRange(event) {
@@ -73,10 +84,12 @@ function handleRange(event) {
 function fillMode(event) {
     if(filling == true) {
         filling = false;
-        mode.innerText = "Fill"
+        mode.innerText = "Fill";
+        ctx.canvas.style.cursor = "default";
     }else {
         filling = true;
         mode.innerText = "Paint"
+        ctx.canvas.style.cursor = "pointer";
         
     }
 
@@ -101,6 +114,53 @@ function saveImage(event) {
     link.click();
 
 }
+function drawEraser(event) {
+    if (ctx != null) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
+//circle 버튼을 클릭했을 때 creating 이 true로 바뀌고 텍스트가 create로 바뀜 , 다시 클릭하면 creating 이 false가 되고 텍스트가 paint로 됨 
+function createCircle(event) {
+    if(circled == true) {
+        creating = false;
+        circles.innerText = "create";
+        
+    }else {
+        circled = true;
+        circles.innerText = "Paint"
+    }
+
+}
+//creating 일 경우 원을 생성할 수 있다 
+function handleCreateClick(event) {
+    if(circled) {
+    const x = event.offsetX;
+    const y = event.offsetY;
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+    }
+}
+
+
+
+/*
+function handleCursor(event) {
+    if(filling === false) {
+        mouseCursor.classList.add("cursor")
+    } else {
+        mouseCursor.classList.remove("cursor")
+    }
+    mouseCursor.style.top = event.pageY + "px"
+    mouseCursor.style.left = event.pageX + "px"    
+}
+
+function hideCursor() {
+    mouseCursor.classList.remove("cursor")   
+} */
+
+
 
 if(canvas) {
     canvas.addEventListener("mousemove" , onMouseMove);
@@ -109,6 +169,11 @@ if(canvas) {
     canvas.addEventListener("mouseleave" , stopPainting);
     canvas.addEventListener("click" , handleCanvasClick);
     canvas.addEventListener("contextmenu" , handleCM);
+    canvas.addEventListener("click" , handleCreateClick);
+    
+    //canvas.addEventListener("mousemove", handleCursor);
+    //canvas.addEventListener("mouseleave", hideCursor);
+    
 }
 
 Array.from(colors).forEach(color => color.addEventListener("click" , handleColorClick));
@@ -123,3 +188,17 @@ if(mode) {
 if(save) {
     save.addEventListener("click" , saveImage);
 }
+if(eraser) {
+    eraser.addEventListener("click" , drawEraser);
+}
+if(circles) {
+    circles.addEventListener("click" , createCircle);
+}
+/*
+canvas.onmousedown = function(event) {
+    const x = event.offsetX;
+   const y = event.offsetY;
+	ctx.arc(x, y, 15, 0, Math.PI*2, true);
+	ctx.closePath();
+	ctx.fill();
+} */
