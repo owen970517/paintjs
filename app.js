@@ -122,12 +122,13 @@ function drawEraser(event) {
 //circle 버튼을 클릭했을 때 creating 이 true로 바뀌고 텍스트가 create로 바뀜 , 다시 클릭하면 creating 이 false가 되고 텍스트가 paint로 됨 
 function createCircle(event) {
     if(circled == true) {
-        creating = false;
+        circled = false;
+        
         circles.innerText = "create";
         
     }else {
         circled = true;
-        circles.innerText = "Paint"
+        circles.innerText = "circle"
     }
 
 }
@@ -139,7 +140,7 @@ function handleCreateClick(event) {
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
     ctx.stroke();
-    ctx.fill();
+    
     }
 }
 
