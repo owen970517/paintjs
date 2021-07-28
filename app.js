@@ -7,14 +7,16 @@ const save = document.getElementById("jsSave");
 const eraser = document.getElementById("jsErase");
 const check = document.getElementById("jsCurColor");
 const circles =  document.getElementById("jsCircle");
+const size  =  document.getElementById("jsSize");
 
 //const mouseCursor = document.querySelector(".cursor");
 //mouseCursor.classList.remove("cursor");
 
 
 /* 그림을 그리기 위해선 캔버스의 픽셀 사이즈를 정해줘야함 */
-canvas.width=700;
-canvas.height= 700;
+canvas.width=document.getElementsByClassName("canvas")[0].offsetWidth;
+canvas.height= document.getElementsByClassName("canvas")[0].offsetHeight;
+
 // 캔버스가 처음 만들어졌을 때 배경색을 하얀색으로 함 
 ctx.fillStyle= "white";
 ctx.fillRect(0,0,canvas.width , canvas.height);
@@ -27,7 +29,7 @@ check.style.backgroundColor ="#2c2c2c";
 /*  처음 브러쉬의 색상  */
 ctx.strokeStyle ="#2c2c2c";
 /* 그려질 때 나오는 선의 굵기 */
-ctx.lineWidth = 5.0;
+ctx.lineWidth = 1.0;
 
 // 처음 채울때 사용할 색상을 저장  
 ctx.fillStyle = "#2c2c2c";
@@ -79,17 +81,18 @@ function handleColorClick(event) {
 function handleRange(event) {
    const size= event.target.value;
    ctx.lineWidth = size;
+   
 }
 
 function fillMode(event) {
     if(filling == true) {
         filling = false;
         mode.innerText = "Fill";
-        ctx.canvas.style.cursor = "default";
+        //ctx.canvas.style.cursor = "default";
     }else {
         filling = true;
         mode.innerText = "Paint"
-        ctx.canvas.style.cursor = "pointer";
+        //ctx.canvas.style.cursor = "pointer";
         
     }
 
@@ -114,6 +117,7 @@ function saveImage(event) {
     link.click();
 
 }
+// 해당 사각형 안에 있는 정보를 지워줌 
 function drawEraser(event) {
     if (ctx != null) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -123,16 +127,16 @@ function drawEraser(event) {
 function createCircle(event) {
     if(circled == true) {
         circled = false;
-        
         circles.innerText = "create";
         
     }else {
         circled = true;
-        circles.innerText = "circle"
+        circles.innerText = "circled"
     }
 
 }
-//creating 일 경우 원을 생성할 수 있다 
+
+// 원을 원하는 위치에 그려줌 
 function handleCreateClick(event) {
     if(circled) {
     const x = event.offsetX;
@@ -140,10 +144,27 @@ function handleCreateClick(event) {
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
     ctx.stroke();
-    
+    ctx.fill();
+   
     }
 }
-
+// size 버튼 클릭으로 캔버스 사이즈를 변경할 수 있다 
+function sizeChange(event) {
+    newCanvasWidth = prompt("너비 값을 입력하시오" , "");
+    newCanvasHeight = prompt("높이 값을 입력하시오" , "");
+    const widthsize = newCanvasWidth;
+    const heightsize = newCanvasHeight;
+    canvas.width = widthsize; 
+    canvas.height = heightsize;
+    canvas.style.width = widthsize;
+    canvas.style.height = heightsize;
+}
+// 좌,우 방향키로 선 굵기 조절 가능 
+function cursorRange(event) {
+    if(event.keyCode === 37 || event.keyCode === 39) {
+        range.focus();
+    }
+}
 
 
 /*
@@ -161,8 +182,6 @@ function hideCursor() {
     mouseCursor.classList.remove("cursor")   
 } */
 
-
-
 if(canvas) {
     canvas.addEventListener("mousemove" , onMouseMove);
     canvas.addEventListener("mousedown" ,startingPainting);
@@ -171,10 +190,8 @@ if(canvas) {
     canvas.addEventListener("click" , handleCanvasClick);
     canvas.addEventListener("contextmenu" , handleCM);
     canvas.addEventListener("click" , handleCreateClick);
-    
     //canvas.addEventListener("mousemove", handleCursor);
-    //canvas.addEventListener("mouseleave", hideCursor);
-    
+    //canvas.addEventListener("mouseleave", hideCursor); 
 }
 
 Array.from(colors).forEach(color => color.addEventListener("click" , handleColorClick));
@@ -195,6 +212,9 @@ if(eraser) {
 if(circles) {
     circles.addEventListener("click" , createCircle);
 }
+if(size) {
+    size.addEventListener("click" , sizeChange);
+}
 /*
 canvas.onmousedown = function(event) {
     const x = event.offsetX;
@@ -203,3 +223,5 @@ canvas.onmousedown = function(event) {
 	ctx.closePath();
 	ctx.fill();
 } */
+window.addEventListener("keydown" , cursorRange );
+
