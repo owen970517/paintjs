@@ -40,7 +40,14 @@ ctx.fillStyle = "#2c2c2c";
 let painting = false;
 let filling = false;
 let circled = false;
+let r = 20;
 
+/*
+function getMousePosition(event) {
+    var x = event.pageX - canvas.offsetLeft;
+    var y = event.pageY - canvas.offsetTop;
+    return { X: x, Y: y };
+  } */
 
 function stopPainting() {
     painting= false;
@@ -50,8 +57,8 @@ function startingPainting() {
 }
 function onMouseMove(event) {
     /* 설정한 canvas 사이즈 안에서만 그릴 것이기 때문에 x,y 값은 offsetX,Y 값만 가져오면 됨 */
-   const x = event.offsetX;
-   const y = event.offsetY;
+   const x = event.pageX - canvas.offsetLeft;
+   const y = event.pageY - canvas.offsetTop; 
    /* if문은 마우스를 클릭하고 있지 않고 그냥 캔버스 위를 움직여도 x,y좌표가 나오지만 화면에 나타나지는 않음  */
    if(!painting) {
        ctx.beginPath();
@@ -135,6 +142,10 @@ function createCircle(event) {
     }
 
 }
+function printValue() {
+    const cv =  r ; 
+    document.getElementById("radiusValue").innerHTML = cv;
+}
 
 // 원을 원하는 위치에 그려줌 
 function handleCreateClick(event) {
@@ -142,9 +153,9 @@ function handleCreateClick(event) {
     const x = event.offsetX;
     const y = event.offsetY;
     ctx.beginPath();
-    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
     ctx.stroke();
-    ctx.fill();
+    
    
     }
 }
@@ -159,13 +170,23 @@ function sizeChange(event) {
     canvas.style.width = widthsize;
     canvas.style.height = heightsize;
 }
+
 // 좌,우 방향키로 선 굵기 조절 가능 
 function cursorRange(event) {
     if(event.keyCode === 37 || event.keyCode === 39) {
         range.focus();
     }
 }
-
+// a , s 버튼을 눌러서 원의 크기를 조절 가능 
+function circlesizeHandle(event) {
+    if(circled && event.keyCode === 65)
+        {
+            r += 5;            
+        }
+    else if (circled && event.keyCode === 83 ){
+        r -=5 ;
+    }
+}
 
 /*
 function handleCursor(event) {
@@ -224,4 +245,8 @@ canvas.onmousedown = function(event) {
 	ctx.fill();
 } */
 window.addEventListener("keydown" , cursorRange );
+
+
+window.addEventListener("keydown" , circlesizeHandle);
+
 
