@@ -7,6 +7,7 @@ const save = document.getElementById("jsSave");
 const eraser = document.getElementById("jsErase");
 const check = document.getElementById("jsCurColor");
 const circles =  document.getElementById("jsCircle");
+const square = document.getElementById("jsSquare");
 const size  =  document.getElementById("jsSize");
 
 //const mouseCursor = document.querySelector(".cursor");
@@ -40,6 +41,7 @@ ctx.fillStyle = "#2c2c2c";
 let painting = false;
 let filling = false;
 let circled = false;
+let squared = false;
 let r = 20;
 
 /*
@@ -132,11 +134,14 @@ function drawEraser(event) {
 }
 //circle 버튼을 클릭했을 때 creating 이 true로 바뀌고 텍스트가 create로 바뀜 , 다시 클릭하면 creating 이 false가 되고 텍스트가 paint로 됨 
 function createCircle(event) {
-    if(circled == true) {
+    if(circled) {
         circled = false;
-        circles.innerText = "create";
+        circles.innerText = "circle";
         
     }else {
+        // 원하는 반지름 값을 바로 설정할 수 있음 
+        //wantradius = prompt("반지름 값을 입력하시오" , "");
+        //r = wantradius;
         circled = true;
         circles.innerText = "circled"
     }
@@ -172,7 +177,7 @@ function sizeChange(event) {
 }
 
 // 좌,우 방향키로 선 굵기 조절 가능 
-function cursorRange(event) {
+function handleLinewidth(event) {
     if(event.keyCode === 37 || event.keyCode === 39) {
         range.focus();
     }
@@ -186,6 +191,26 @@ function circlesizeHandle(event) {
     else if (circled && event.keyCode === 83 ){
         r -=5 ;
     }
+}
+function modeSquare(event) {
+    if(squared ) {
+        squared = false;
+        square.innerText = "square";
+        
+    }else {
+        squared = true;
+        square.innerText = "squared"
+    }
+
+}
+function createSquare(event) {
+    if(squared == true) {
+        const x = event.offsetX;
+        const y = event.offsetY;
+        ctx.beginPath();
+        ctx.strokeRect(x, y, 30, 30);
+       
+        }
 }
 
 /*
@@ -211,6 +236,7 @@ if(canvas) {
     canvas.addEventListener("click" , handleCanvasClick);
     canvas.addEventListener("contextmenu" , handleCM);
     canvas.addEventListener("click" , handleCreateClick);
+    canvas.addEventListener("click" , createSquare);
     //canvas.addEventListener("mousemove", handleCursor);
     //canvas.addEventListener("mouseleave", hideCursor); 
 }
@@ -236,6 +262,9 @@ if(circles) {
 if(size) {
     size.addEventListener("click" , sizeChange);
 }
+if(square) {
+    square.addEventListener("click" , modeSquare);
+}
 /*
 canvas.onmousedown = function(event) {
     const x = event.offsetX;
@@ -244,7 +273,7 @@ canvas.onmousedown = function(event) {
 	ctx.closePath();
 	ctx.fill();
 } */
-window.addEventListener("keydown" , cursorRange );
+window.addEventListener("keydown" , handleLinewidth );
 
 
 window.addEventListener("keydown" , circlesizeHandle);
