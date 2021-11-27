@@ -1,2 +1,3 @@
 # paintjs
-Painting Board made with VanillaJS
+자바스크립트를 통해 그림판을 만들었습니다. 
+
